@@ -81,7 +81,7 @@ def hamming7_4_parity(n):
     y = f(x) # modulo-2
 #     print("y =", y)
     l = list(y)
-    l.reverse()
+#     l.reverse()
     p = unbits(l)
 #     assert(0 == p)
     return p
@@ -90,22 +90,30 @@ def hamming7_4_decode(n):
     d = bits(n,7)
     p = hamming7_4_parity(n)
     if 0 != p:
-        print("Error in bit", p - 1)
+#         print("Error in bit", p - 1)
         d[p - 1] = 1 - d[p - 1]
-        
-    return unbits(d)
+    e = [d[2], d[4], d[5], d[6]]
+    return unbits(e)
 
-for n in range(16):
-    h = hamming7_4_encode(n)
-    print("data =", n, "codeword =", hex(h))
-    y = hamming7_4_decode(h)
-    print("y =", y) # , " decoded =", hex(unbits(y)))
-    
 encode = [ hamming7_4_encode(n) for n in range(16)]
-print("encode =", encode)
-printVar(encode, 2, 8, varName="hamming7_4_encode")
 decode = [ hamming7_4_decode(n) for n in range(128)]
+print("encode =", encode)
 print("decode =", decode)
-printVar(decode, 4, 4, varName="hamming7_4_decode")
 
+# Test the encode and decode tables
+for n in range(16):
+    for c in range(8):
+        h = encode[n]
+        m = (h ^ (1 << c)) & 0x7F # corrupt each codeword bit in turn
+#         print("data =", n, "codeword =", hex(m))
+        y = decode[m]
+        assert decode[h] == n
+        errorDetected = (encode[y] != m)
+        assert errorDetected == (c != 7)
+#         print("y =", y) # , " decoded =", hex(unbits(y)))
+        assert y == n
+
+# If all is well then dump the C lookup arrays
+printVar(encode, 2, 8, varName="hamming7_4_encode")
+printVar(decode, 4, 4, varName="hamming7_4_decode")
       
