@@ -57,17 +57,12 @@ def hamming7_4_encode(n):
     y = matMulModulo2(G,p) # multiply with the generator matrix
     return unbits(y)        # and convert back to an integer
 
-# def hamming7_4_parity(n):
-#     r = bits(n, 7)         # expand to a bit array, size 4
-#     x = matMulModulo2(H,r) # multiply with the parity matrix
-#     return unbits(x)       # and convert back to an integer
-
 def hamming7_4_decode(n):
     d = bits(n, 7)         # expand to a bit array, size 7
     x = matMulModulo2(H,d) # multiply with the parity matrix
     p = unbits(x)          # and convert back to an integer
     if 0 != p:             # if there is a bit error...
-        d[p - 1] = 1 - d[p - 1]  # ...then flip the corrupted bit
+        d[p - 1] = 1 - d[p - 1]  # ...then invert the corrupted bit
     e = [d[2], d[4], d[5], d[6]] # make a list of the data bits
     return unbits(e)       # and convert it back to an integer
 
